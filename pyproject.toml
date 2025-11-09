@@ -1,0 +1,11 @@
+[project]
+name = "kapital"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.3.4",
+    "orjson>=3.11.4",
+    "picows>=1.10.1",
+]
