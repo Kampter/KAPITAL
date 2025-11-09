@@ -32,6 +32,17 @@ SUMMARY_EVERY_SEC = int(os.getenv("SUMMARY_EVERY_SEC", "10"))
 
 CHANNELS = ("trades", "books5")  # no l2-tbt per request
 
+# 放在 import 之后、任何函数体之外
+EPOCH_OFFSET_US = None  # 单调时钟 -> UNIX 时间的偏移
+
+def init_epoch_offset():
+    global EPOCH_OFFSET_US
+    # 计算：UNIX(微秒) - 单调(微秒)
+    EPOCH_OFFSET_US = (time.time_ns() // 1_000) - (time.perf_counter_ns() // 1_000)
+
+def mono_us_to_epoch_us(mono_us: int) -> int:
+    # 单调时钟微秒 + 偏移 = UNIX 微秒
+    return mono_us + EPOCH_OFFSET_US
 
 def now_us_monotonic() -> int:
     return time.perf_counter_ns() // 1_000
@@ -115,6 +126,8 @@ class OkxLatencyListener(WSListener):
             return
 
         recv_us = now_us_monotonic()
+        recv_us_mono = now_us_monotonic()
+        recv_us_epoch = mono_us_to_epoch_us(recv_us_mono)
         raw = self._payload_bytes(frame)
         if raw is None:
             return
@@ -148,6 +161,8 @@ class OkxLatencyListener(WSListener):
                 continue
             try:
                 msg_ts_us = int(ts_ms) * 1000
+                lat_us = max(0, recv_us_epoch - msg_ts_us)   # 同一时钟域
+                st.add(lat_us, parse_us, frame_len)
             except Exception:
                 continue
             lat_us = max(0, recv_us - msg_ts_us)
@@ -233,6 +248,7 @@ def make_markdown_report(stats: Dict[str, StreamStats], duration_sec: int) -> st
 
 
 async def run() -> None:
+    init_epoch_offset()  # <--- 新增
     # prepare stats map for all channel:symbol combinations
     stats: Dict[str, StreamStats] = {}
     for sym in SYMBOLS:
