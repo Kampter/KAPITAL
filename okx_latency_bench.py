@@ -16,7 +16,6 @@ import asyncio
 import os
 import time
 import zlib
-from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import Dict, List, Tuple
 
@@ -41,6 +40,8 @@ def init_epoch_offset():
     EPOCH_OFFSET_US = (time.time_ns() // 1_000) - (time.perf_counter_ns() // 1_000)
 
 def mono_us_to_epoch_us(mono_us: int) -> int:
+    if EPOCH_OFFSET_US is None:
+        raise RuntimeError('init_epoch_offset() must run before converting monotonic timestamps')
     # 单调时钟微秒 + 偏移 = UNIX 微秒
     return mono_us + EPOCH_OFFSET_US
 
@@ -125,7 +126,6 @@ class OkxLatencyListener(WSListener):
         if frame.msg_type not in (WSMsgType.TEXT, WSMsgType.BINARY):
             return
 
-        recv_us = now_us_monotonic()
         recv_us_mono = now_us_monotonic()
         recv_us_epoch = mono_us_to_epoch_us(recv_us_mono)
         raw = self._payload_bytes(frame)
@@ -161,11 +161,9 @@ class OkxLatencyListener(WSListener):
                 continue
             try:
                 msg_ts_us = int(ts_ms) * 1000
-                lat_us = max(0, recv_us_epoch - msg_ts_us)   # 同一时钟域
-                st.add(lat_us, parse_us, frame_len)
             except Exception:
                 continue
-            lat_us = max(0, recv_us - msg_ts_us)
+            lat_us = max(0, recv_us_epoch - msg_ts_us)   # 同一时钟域
             st.add(lat_us, parse_us, frame_len)
 
     @staticmethod
