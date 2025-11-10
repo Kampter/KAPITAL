@@ -1,24 +1,10 @@
-## Kapital Demo
+## Kapital
 
-This repository contains a minimal websocket demo that streams OKX `HYPE-USDT` trades and order book updates using the low-latency [`picows`](https://github.com/quixdb/picows) client.
+Low-latency OKX streaming demo powered by `picows`, `orjson`, and a Rust ring buffer exposed via PyO3.
 
-### Prerequisites
+### Quickstart
 
-- Python 3.12 (managed automatically via `uv`)
-- `uv` package manager
+1. `uv sync` (installs Python deps and builds the Rust extension)
+2. `uv run python main.py`
 
-### Setup
-
-Install dependencies into the local virtual environment:
-
-```bash
-uv sync
-```
-
-### Run the demo
-
-```bash
-uv run python main.py
-```
-
-The script subscribes to the OKX public websocket and prints trades and book snapshots with an inline latency estimate (in milliseconds). Press `Ctrl+C` to stop the process.
+`uv run python main.py` is the single entrypoint; it subscribes to HYPE-USDT trades/books and prints latency plus short-window signals. Stop with Ctrl+C.

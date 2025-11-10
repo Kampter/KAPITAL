@@ -7,5 +7,10 @@ requires-python = ">=3.12"
 dependencies = [
     "numpy>=2.3.4",
     "orjson>=3.11.4",
+    "kapital-rust",
     "picows>=1.10.1",
 ]
+[tool.setuptools.packages.find]
+include = ["quant*"]
+[tool.uv.sources]
+kapital-rust = { path = "quant/rust" }

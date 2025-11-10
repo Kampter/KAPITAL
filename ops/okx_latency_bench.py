@@ -30,8 +30,8 @@ from picows import WSMsgType, WSListener, ws_connect
 
 # 端点集：8443 与默认 443
 OKX_ENDPOINTS = [
-    "wss://ws.okx.com:8443/ws/v5/public",
-    "wss://ws.okx.com/ws/v5/public",
+    "wss://ws.okx.com:8443/ws/v5/public"
+    # "wss://ws.okx.com/ws/v5/public",
 ]
 
 SYMBOLS = [s.strip() for s in os.getenv("OKX_SYMBOLS", "HYPE-USDT").split(",") if s.strip()]
