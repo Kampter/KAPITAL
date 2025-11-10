@@ -1,7 +1,7 @@
 ### 项目简介
 1. 使用uv这个python管理工具
 2. 使用 picows 这个低延迟的websokect library
-3. 获取okx中hype_usdt的trader和books数据
+3. 获取 okx 中 hype_usdt 的 trader 和 books 的频道数据
 4. 需要一个低延迟的延迟性能监控工具，不会影响数据获取和后续处理计算
 5. 直接打印关键信息，不需要持久化存储
 
@@ -15,7 +15,6 @@
 输出：main.py
 
 ### v0.2需求
-1. okx_latency_bench.py是我在gcp东京的测试脚本，如有需要你可以调整这个代码
-2. 我需要你写一个.sh脚本，自动化一键优化gcp上面的c4云主机
-3. 我的云主机：2c4gb，ubuntu 24.04 lts
-4. 最终目的: 连接到okx的websocket行情数据，极低的延迟，目前测试下来orjson解析的延迟只有3-6us，完全不是性能瓶颈，目前瓶颈来自websocket和linux内核优化
+1. okx_latency_bench.py是我在 aws 香港的测试脚本，如有需要你可以调整这个代码
+2. optimize.sh是 aws香港的一键优化脚本
+3. 我的云主机：c7i.large，ubuntu 24.04 lts
